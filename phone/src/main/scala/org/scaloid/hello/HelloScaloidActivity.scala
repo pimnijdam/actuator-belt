@@ -20,18 +20,28 @@ class HelloScaloidActivity extends SActivity
     var mmOutputStream    : OutputStream     = null
     override implicit val tag                = LoggerTag("BELT")
     var mSensorManager    : SensorManager    = null
-    var directon          : Char             = 'a'
 
-  private final val mListener = new SensorEventListener() {
-    def onSensorChanged(sensor: SensorEvent)
+    private final val mListener = new SensorEventListener()
     {
-        val degrees = sensor.values(0)
-        val f = degrees * 8 / 360
-        val i = f.round % 8
-        info("direction " + f + " --> " + i)
-    }
 
-    def onAccuracyChanged(sensor: Sensor, accuracy: Int) { }
+        var direction : Int = 0
+
+        def onSensorChanged(sensor: SensorEvent)
+        {
+            val degrees = sensor.values(0)
+            val f = degrees * 8 / 360
+            val d = f.round % 8
+            if (d != direction)
+            {
+                info("new direction " + f + " --> " + d)
+
+                send(('a' + direction).toChar)
+                send(('A' + d).toChar)
+                direction = d
+            }
+        }
+
+        def onAccuracyChanged(sensor: Sensor, accuracy: Int) { }
     }
 
     def findBlueTooth () =
@@ -81,7 +91,7 @@ class HelloScaloidActivity extends SActivity
 
     def send(c : Char)
     {
-            mmOutputStream.write(c)
+        if (mmOutputStream != null) mmOutputStream.write(c)
     }
 
     def init () =
@@ -92,12 +102,12 @@ class HelloScaloidActivity extends SActivity
 
     def start () =
     {
-        send('A')
+        send('J')
     }
 
     def stop () =
     {
-        send('a')
+        send('j')
     }
 
     onCreate
