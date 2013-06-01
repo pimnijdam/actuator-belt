@@ -18,8 +18,8 @@ class HelloScaloidActivity extends SActivity
     var mBluetoothDevice  : BluetoothDevice  = null
     var mmSocket          : BluetoothSocket  = null
     var mmOutputStream    : OutputStream     = null
-    override implicit val tag                = LoggerTag("BELT")
     var mSensorManager    : SensorManager    = null
+    override implicit val tag                = LoggerTag("BELT")
 
     private final val mListener = new SensorEventListener()
     {
@@ -28,8 +28,13 @@ class HelloScaloidActivity extends SActivity
         def onSensorChanged(sensor: SensorEvent)
         {
             val degrees = sensor.values(0)
+
+            // There are 8 actuators where
+            // a = 0 = south
+            // d = 3 = north
+
             val f = degrees * 8 / 360
-            val d = f.round % 8
+            val d = (f.round + 4) % 8
             if (d != direction)
             {
                 info("new direction " + f + " --> " + d)
@@ -41,6 +46,13 @@ class HelloScaloidActivity extends SActivity
         }
 
         def onAccuracyChanged(sensor: Sensor, accuracy: Int) { }
+    }
+
+    def isMyBtd (acc : BluetoothDevice, d : Object) =
+    {
+       val btd = d.asInstanceOf[BluetoothDevice]
+
+       if ("linvor" == btd.getName()) btd else acc
     }
 
     def findBlueTooth () =
@@ -64,8 +76,7 @@ class HelloScaloidActivity extends SActivity
             if(pairedDevices.size() > 0)
             {
                 info("compose list of devices")
-                val arr   = pairedDevices.toArray
-                mBluetoothDevice = arr.foldLeft(mBluetoothDevice)((acc, d) => if ("linvor" == d.asInstanceOf[BluetoothDevice].getName()) d.asInstanceOf[BluetoothDevice]; else acc)
+                mBluetoothDevice = pairedDevices.toArray.foldLeft(mBluetoothDevice)(isMyBtd)
             }
             r = "Connected"
         } else
@@ -89,6 +100,17 @@ class HelloScaloidActivity extends SActivity
         }
     }
 
+    def closeBlueTooth()
+    {
+        if (mmSocket != null)
+        {
+            mmSocket.close()
+            mmSocket         = null
+            mBluetoothDevice = null
+            mText.text = "Disconnected"
+        }
+    }
+
     def send(c : Char)
     {
         if (mmOutputStream != null)
@@ -98,18 +120,24 @@ class HelloScaloidActivity extends SActivity
         }
     }
 
-    def init () =
+    def connect () =
     {
         findBlueTooth()
         openBlueTooth()
     }
 
-    def start () =
+    def disconnect () =
+    {
+        disableAll()
+        closeBlueTooth()
+    }
+
+    def enableAll () =
     {
         send('J')
     }
 
-    def stop () =
+    def disableAll () =
     {
         send('j')
     }
@@ -125,9 +153,10 @@ class HelloScaloidActivity extends SActivity
                 case v => v.backgroundColor(Color.YELLOW)
             }
             mText = STextView("Waiting to connect")
-            SButton("Connect").onClick(init)
-            SButton("Enable all").onClick(start)
-            SButton("Disable all").onClick(stop)
+            SButton("Connect").onClick(connect)
+            SButton("Enable all").onClick(enableAll)
+            SButton("Disable all").onClick(disableAll)
+            SButton("Disconnect").onClick(disconnect)
         }.padding(20 dip)
 
         mSensorManager = getSystemService(Context.SENSOR_SERVICE).asInstanceOf[SensorManager]
