@@ -1,0 +1,94 @@
+Getting Started with Scala for Android on Archlinux             Maarten Faddegon
+--------------------------------------------------------------------------------
+
+== Install packages ==
+
+First we need to install the Eclipse, Scala and the Android tools.
+
+Eclipse and Scala are the the official repositories, we can install with:
+    $ pacman -S eclipse scala
+
+The android tools and some useful android plugins can be found in the AUR.  We
+need at least the following tools: android-sdk, android-udev,
+eclipse-androidproguardscala, eclipse-android, eclipse-emf, eclipse-gef
+eclipse-scala-ide, eclipse-wtp, android-sdk-build-tools,
+android-sdk-platform-tools, android-platform-16, android-support.
+Version 16 of android-platform matches Android 4.1, the version on my phone,
+we need to install other versions as well if we want to target different
+android versions. You may need to install some depencies from the official
+repositories too. To install a package, you need to download the tarball and
+issue the following commands. (Read more about installing from AUR on the
+archwiki. [1])
+    $ tar -xzf <package>.tar.gz
+    $ cd <package>
+    $ cat PKGBUILD # to inspect nothing weird is done
+    $ makepkg 
+    $ sudo pacman -U <package><version>.pkg.tar.xz 
+
+Afterwards we need to add some links for backward compatibility [4]:
+    $ cd /opt/android-sdk/platform-tools
+    $ sudo ln -s ../build-tools/17.0.0/{lib,aidl,aapt} .
+
+== First app In Eclipse ==
+
+When we start Eclipse for the first time it needs to reconfigure itself
+because of the installed plugins. We may also need to tell it that the
+android sdk is installed in /opt/android-sdk/.
+
+We start with creating a normal Java app to test our setup. For this we
+just follow Googles instructions. [2] Note that after the setup is complete we
+may still need to close "Welcome" page.
+After following the first 2 lessons, we now should have run a first hello
+world on our Android device.
+
+== First Scala app in Eclipse ==
+
+Use the following 2 steps from [3] on the "My First App" project we created in
+the previous section:
+ o Right-click on the project, Configure, Add Scala nature
+ o Right-click on the project, Add AndroidProguardScala nature
+
+Now we can replace the java main wit a scala class:
+ o Delete MainActivity.java
+ o Right-click on the package, new, other, Scala Class, name it MainActity
+
+And put the following code in the newly created MainActivity.scala:
+    package faddegonbros.myfirstapp
+    import android.app.Activity
+    import android.os.Bundle
+    class MainActivity extends Activity
+    {
+        override def onCreate(savedInstanceState: Bundle)
+        {
+            super.onCreate(savedInstanceState)
+            setContentView(R.layout.activity_main)
+        }
+    }
+
+We should be able to compile and run the app again.
+
+== First Scalaoid App without Eclipse ==
+
+We take an example project from github:
+
+    $ git clone https://github.com/pocorall/hello-scaloid-maven.git
+
+We need to update pom.xml to point to the sdk. Maven also needs some links
+in order to find some build tools (described above).
+        <sdk>
+    +           <path>/opt/android-sdk</path>
+                <platform>8</platform>
+        </sdk>
+
+Now we can build a package and send it to our Android device.
+
+    $ mvn clean package
+    $ mvn android:deploy
+
+== Bibliography ==
+
+[1] https://wiki.archlinux.org/index.php/Arch_User_Repository#Installing_packages
+[2] http://developer.android.com/training/basics/firstapp/creating-project.html#Eclipse
+[3] https://github.com/banshee/AndroidProguardScala/blob/master/README.md#using-the-plugin
+[4] http://stackoverflow.com/questions/16619143/android-maven-could-not-find-tool-aapt
+[5] https://github.com/pocorall/hello-scaloid-maven/blob/master/README.markdown
