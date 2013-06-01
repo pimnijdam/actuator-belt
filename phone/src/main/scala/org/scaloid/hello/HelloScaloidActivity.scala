@@ -23,7 +23,6 @@ class HelloScaloidActivity extends SActivity
 
     private final val mListener = new SensorEventListener()
     {
-
         var direction : Int = 0
 
         def onSensorChanged(sensor: SensorEvent)
@@ -68,9 +67,10 @@ class HelloScaloidActivity extends SActivity
                 val arr   = pairedDevices.toArray
                 mBluetoothDevice = arr.foldLeft(mBluetoothDevice)((acc, d) => if ("linvor" == d.asInstanceOf[BluetoothDevice].getName()) d.asInstanceOf[BluetoothDevice]; else acc)
             }
+            r = "Connected"
         } else
         {
-            r = "no bluetoothadapter"
+            r = "No bluetooth adapter?"
         }
                 
         info("done, return r")
@@ -91,7 +91,11 @@ class HelloScaloidActivity extends SActivity
 
     def send(c : Char)
     {
-        if (mmOutputStream != null) mmOutputStream.write(c)
+        if (mmOutputStream != null)
+        {
+            mText.text = "Send '" + c + "'"
+            mmOutputStream.write(c)
+        }
     }
 
     def init () =
@@ -120,10 +124,10 @@ class HelloScaloidActivity extends SActivity
                 case t: STextView => t.textSize(10 dip)
                 case v => v.backgroundColor(Color.YELLOW)
             }
-            mText = STextView("Waiting for bluetooth devices...")
-            SButton("init").onClick(init)
-            SButton("start").onClick(start)
-            SButton("stop").onClick(stop)
+            mText = STextView("Waiting to connect")
+            SButton("Connect").onClick(init)
+            SButton("Enable all").onClick(start)
+            SButton("Disable all").onClick(stop)
         }.padding(20 dip)
 
         mSensorManager = getSystemService(Context.SENSOR_SERVICE).asInstanceOf[SensorManager]
