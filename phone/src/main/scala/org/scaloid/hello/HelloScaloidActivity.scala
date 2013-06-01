@@ -6,15 +6,19 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.Intent
+import java.io.OutputStream
+import java.util.UUID
 
 class HelloScaloidActivity extends SActivity
 {
     var mText             : STextView        = null
     var mBluetoothAdapter : BluetoothAdapter = null
     var mBluetoothDevice  : BluetoothDevice  = null
+    var mmSocket          : BluetoothSocket  = null
+    var mmOutputStream    : OutputStream     = null
     override implicit val tag = LoggerTag("BELT")
 
-    //def toName (d : Object) = { d.asInstanceOf[BluetoothDevice].getName() }
+    // def doFilter ((acc, d)) = if ("linvor" == d.asInstanceOf[BluetoothDevice].getName()) d; else acc
 
     def findBlueTooth () =
     {
@@ -39,13 +43,15 @@ class HelloScaloidActivity extends SActivity
             {
                 info("compose list of devices")
 
+                //val names = arr.map(d => d.asInstanceOf[BluetoothDevice].getName())
+                //r         = names.reduceLeft(_+_)
+
                 val arr   = pairedDevices.toArray
-                val names = arr.map(d => d.asInstanceOf[BluetoothDevice].getName())
-                r         = names.reduceLeft(_+_)
+                mBluetoothDevice = arr.foldLeft(mBluetoothDevice)((acc, d) => if ("linvor" == d.asInstanceOf[BluetoothDevice].getName()) d.asInstanceOf[BluetoothDevice]; else acc)
             }
         } else
         {
-            r = "mislukt"
+            r = "no bluetoothadapter"
         }
                 
         info("done, return r")
@@ -53,9 +59,22 @@ class HelloScaloidActivity extends SActivity
         mText.text = r
     }
 
+    def openBlueTooth()
+    {
+        if (mBluetoothDevice != null)
+        {
+            val uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
+            mmSocket = mBluetoothDevice.createRfcommSocketToServiceRecord(uuid) 
+            mmSocket.connect()
+            mmOutputStream = mmSocket.getOutputStream();
+            mmOutputStream.write('A')
+        }
+    }
+
     def buttonClicked () =
     {
-        mText = findBlueTooth()
+        findBlueTooth()
+        openBlueTooth()
     }
 
     onCreate {
