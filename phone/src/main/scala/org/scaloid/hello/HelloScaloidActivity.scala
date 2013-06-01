@@ -18,12 +18,9 @@ class HelloScaloidActivity extends SActivity
     var mmOutputStream    : OutputStream     = null
     override implicit val tag = LoggerTag("BELT")
 
-    // def doFilter ((acc, d)) = if ("linvor" == d.asInstanceOf[BluetoothDevice].getName()) d; else acc
-
     def findBlueTooth () =
     {
         var r = ""
-
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         if (mBluetoothAdapter != null)
@@ -67,26 +64,42 @@ class HelloScaloidActivity extends SActivity
             mmSocket = mBluetoothDevice.createRfcommSocketToServiceRecord(uuid) 
             mmSocket.connect()
             mmOutputStream = mmSocket.getOutputStream();
-            mmOutputStream.write('A')
         }
     }
 
-    def buttonClicked () =
+    def send(c : Char)
+    {
+            mmOutputStream.write(c)
+    }
+
+    def init () =
     {
         findBlueTooth()
         openBlueTooth()
     }
 
+    def start () =
+    {
+        send('A')
+    }
+
+    def stop () =
+    {
+        send('a')
+    }
+
     onCreate {
         contentView = new SVerticalLayout {
             style {
-                case b: SButton => b.textColor(Color.RED).onClick(buttonClicked)
+                case b: SButton => b.textColor(Color.RED)
                 case t: STextView => t.textSize(10 dip)
                 case v => v.backgroundColor(Color.YELLOW)
             }
 
             mText = STextView("Waiting for bluetooth devices...")
-            SButton(R.string.red)
+            SButton("init").onClick(init)
+            SButton("start").onClick(start)
+            SButton("stop").onClick(stop)
         }.padding(20 dip)
     }
 }
