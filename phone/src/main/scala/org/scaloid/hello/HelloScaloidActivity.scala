@@ -6,6 +6,8 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.Intent
+import android.hardware.{Sensor, SensorEvent, SensorEventListener, SensorManager}
+import android.content.Context
 import java.io.OutputStream
 import java.util.UUID
 
@@ -16,7 +18,21 @@ class HelloScaloidActivity extends SActivity
     var mBluetoothDevice  : BluetoothDevice  = null
     var mmSocket          : BluetoothSocket  = null
     var mmOutputStream    : OutputStream     = null
-    override implicit val tag = LoggerTag("BELT")
+    override implicit val tag                = LoggerTag("BELT")
+    var mSensorManager    : SensorManager    = null
+    var directon          : Char             = 'a'
+
+  private final val mListener = new SensorEventListener() {
+    def onSensorChanged(sensor: SensorEvent)
+    {
+        val degrees = sensor.values(0)
+        val f = degrees * 8 / 360
+        val i = f.round % 8
+        info("direction " + f + " --> " + i)
+    }
+
+    def onAccuracyChanged(sensor: Sensor, accuracy: Int) { }
+    }
 
     def findBlueTooth () =
     {
@@ -39,10 +55,6 @@ class HelloScaloidActivity extends SActivity
             if(pairedDevices.size() > 0)
             {
                 info("compose list of devices")
-
-                //val names = arr.map(d => d.asInstanceOf[BluetoothDevice].getName())
-                //r         = names.reduceLeft(_+_)
-
                 val arr   = pairedDevices.toArray
                 mBluetoothDevice = arr.foldLeft(mBluetoothDevice)((acc, d) => if ("linvor" == d.asInstanceOf[BluetoothDevice].getName()) d.asInstanceOf[BluetoothDevice]; else acc)
             }
@@ -88,18 +100,28 @@ class HelloScaloidActivity extends SActivity
         send('a')
     }
 
-    onCreate {
-        contentView = new SVerticalLayout {
-            style {
+    onCreate
+    {
+        contentView = new SVerticalLayout
+        {
+            style
+            {
                 case b: SButton => b.textColor(Color.RED)
                 case t: STextView => t.textSize(10 dip)
                 case v => v.backgroundColor(Color.YELLOW)
             }
-
             mText = STextView("Waiting for bluetooth devices...")
             SButton("init").onClick(init)
             SButton("start").onClick(start)
             SButton("stop").onClick(stop)
         }.padding(20 dip)
+
+        mSensorManager = getSystemService(Context.SENSOR_SERVICE).asInstanceOf[SensorManager]
+        val sensors = mSensorManager.getSensorList(Sensor.TYPE_ORIENTATION)
+        val it = sensors.iterator()
+        while (it.hasNext) {
+          mSensorManager.registerListener(mListener, it.next(),
+            SensorManager.SENSOR_DELAY_GAME)
+        }
     }
 }
