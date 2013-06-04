@@ -1,4 +1,4 @@
-package org.scaloid.hello
+package hackaton.actuatorbelt
 
 import org.scaloid.common._
 import android.graphics.Color
@@ -11,7 +11,7 @@ import android.content.Context
 import java.io.OutputStream
 import java.util.UUID
 
-class HelloScaloidActivity extends SActivity
+class ActuatorBeltActivity extends SActivity
 {
     var mText             : STextView        = null
     var mBluetoothAdapter : BluetoothAdapter = null
