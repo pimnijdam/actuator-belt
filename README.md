@@ -47,8 +47,8 @@ Also bluetooth receiving is addressed somewhat by only sending changes.
 [1]: These measurements were taken a while back, I don't remember the tail time for BT receiving.
 
 ## Credits ##
-Credits to my friends which whom I developed the fully functional prototype.
+Credits to the researchers of the [feelspace group](http://feelspace.cogsci.uni-osnabrueck.de/) who inspired us to create our version of the haptic compass. But most of all to my friends which whom I developed this fully functional prototype.
 
 - [Maarten](https://github.com/MaartenFaddegon), persevering to get things done the Scala way.
 - [Martin](https://github.com/mnitram), wielding the soldering iron with blazing speed.
-- [Pepijn](ttps://github.com/Gneisbaard), producing ideas and subsequent arduino code effortlessly.
+- [Pepijn](https://github.com/Gneisbaard), producing ideas and subsequent arduino code effortlessly.
