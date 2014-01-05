@@ -183,8 +183,8 @@ void loop() {
   if (mode == 0 && Serial.available() )       // if data is available to read
   {
     val = Serial.read();         // read it and store it in 'val'
-  } else if (mode == 1 && jiffies == 25) {
-    //read from compass, max 4x per second
+  } else if (mode == 1 && (jiffies%5) == 0) {
+    //read from compass
     val = getDirection();
   }
   if (val >= 'a' && val <= 'h')
