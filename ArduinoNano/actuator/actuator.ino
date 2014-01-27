@@ -61,6 +61,14 @@ void sleepNow()
 }
 
 
+void setupCompass() {
+  //Setup HMC5883 for continuous measurement
+  Wire.beginTransmission(address); //open communication with HMC5883
+  Wire.write(0x02); //select mode register
+  Wire.write(0x00); //continuous measurement mode
+  Wire.endTransmission();
+}
+
 void setup() {
 
   //setup led
@@ -69,11 +77,7 @@ void setup() {
   Serial.begin(9600);       // start serial communication at 9600bps
   //setup I2C with compass
   Wire.begin();
-  //Setup HMC5883 for continuous measurement
-  Wire.beginTransmission(address); //open communication with HMC5883
-  Wire.write(0x02); //select mode register
-  Wire.write(0x00); //continuous measurement mode
-  Wire.endTransmission();
+  setupCompass();
   
   //setup motors
   pinMode( 2, OUTPUT);
@@ -174,8 +178,12 @@ void loop() {
   unsigned char mask      = 0;
   boolean changed = false;
   
-  if (++jiffies >= 500)
+  if (++jiffies >= 500) {
+    //If there is a problem with the compass, e.g. short power outage it won't function.
+    //So setup the compass every 5 seconds.
+    setupCompass();
     jiffies = 0;
+  }
 
   unsigned char actuators_prev = actuators;
   char val = -1;
