@@ -4,7 +4,7 @@ actuator-belt
 The actuactor-belt project! Trying to experience the [haptic compass](http://feelspace.cogsci.uni-osnabrueck.de/).
 This is the result of a day hacking with friends.
 
-![Prototype](http://raw.github.com/pimnijdam/actuator-belt/master/doc/prototype.jpg)
+![Prototype](https://raw.github.com/pimnijdam/actuator-belt/master/doc/prototype.jpg)
 
 
 A small belt with vibrating motors is worn around the ankle and fastened using your sock. The arduino can be worn a little heigher on the leg, being quite comfortably strapped to the leg. Alternatively the Arduino can also be placed inside your sock.
@@ -24,7 +24,7 @@ The Phone senses north using the compass, it sends over bluetooth the command to
 Motors are directly connected to the ribbon cable instead of applying a connector.
 
 ### Schematic
-![Schematic](http://raw.github.com/pimnijdam/actuator-belt/master/schematics/sheet1.jpg)
+![Schematic](https://raw.github.com/pimnijdam/actuator-belt/master/schematics/sheet1.jpg)
 
 
 ## Power consumption ##
@@ -47,8 +47,8 @@ Also bluetooth receiving is addressed somewhat by only sending changes.
 [1]: These measurements were taken a while back, I don't remember the tail time for BT receiving.
 
 ## Credits ##
-Credits to my friends which whom I developed the fully functional prototype.
+Credits to the researchers of the [feelspace group](http://feelspace.cogsci.uni-osnabrueck.de/) who inspired us to create our version of the haptic compass. But most of all to my friends which whom I developed this fully functional prototype.
 
 - [Maarten](https://github.com/MaartenFaddegon), persevering to get things done the Scala way.
 - [Martin](https://github.com/mnitram), wielding the soldering iron with blazing speed.
-- [Pepijn](ttps://github.com/Gneisbaard), producing ideas and subsequent arduino code effortlessly.
+- [Pepijn](https://github.com/Gneisbaard), producing ideas and subsequent arduino code effortlessly.
